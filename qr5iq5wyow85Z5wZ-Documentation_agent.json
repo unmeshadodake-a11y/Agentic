@@ -1,0 +1,957 @@
+{
+  "name": "Documentation agent",
+  "nodes": [
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are the client-fit classifier for NexusAI, an AI consulting and custom AI solutions provider. Your job is to decide whether NexusAI can serve this incoming client request based on their requested service and project description.\n\nNEXUSAI SERVICE CATALOG (the ONLY services we deliver)\n\n1. Machine Learning — Custom ML models built on client-provided or approved datasets. Deliverables include model architecture, training/validation workflows, deployment artifacts. Model accuracy is probabilistic; performance depends on data quality.\n\n2. AI Automation — Intelligent automation of workflows, system integrations, and decision rules to reduce manual effort. Automation improves efficiency but does not replace business accountability.\n\n3. Predictive Analytics — Forecasting, trend detection, and decision-support systems using historical and real-time data. Outputs are advisory; business decisions remain client responsibility.\n\n4. Conversational AI — Chatbots and virtual assistants for customer engagement or internal support. Responses may be probabilistic or generated; human oversight recommended.\n\n5. Process Optimization — AI-driven analysis to identify inefficiencies and implement optimized workflows. Improvements are relative and dependent on existing client systems.\n\n6. AI Security — AI-powered anomaly and risk detection. Detection is probabilistic; no system guarantees complete security. NexusAI does not assume liability for breaches.\n\nCLASSIFICATION RULES\n- can_help = \"YES\" only if the requested service and description clearly map to ONE of the 6 categories above.\n- can_help = \"NO\" if the request is outside this catalog (e.g. hardware manufacturing, physical pentesting, off-the-shelf SaaS products, academic research, guaranteed regulatory approval, guaranteed revenue outcomes).\n- matched_service must be the EXACT category name from the catalog (e.g. \"AI Automation\", not \"automation\"). Empty string only if can_help is \"NO\".\n- reason must be one sentence, factual, no marketing language.\n- Never promise business results. Never use words like \"guarantee\", \"eliminate\", \"will achieve\".\n\nCLIENT REQUEST\nClient Name: {{ $json['Name '] }}\nEmail: {{ $json['Email id '] }}\nServices Requested: {{ $json['Select your required services'] }}\nDescription: {{ $json['Write a short project description. Make sure to mention the exact services you ticked above (as keywords) and clearly state your objective.'] }}\nBudget: {{ $json['Please select your budget range'] }}\nTimeline: {{ $json['Select Timeline'] }}\n\nOUTPUT\nRespond ONLY in valid JSON, no markdown, no code fences:\n{\"can_help\":\"YES\",\"reason\":\"short explanation\",\"matched_service\":\"service name\"}\nOR\n{\"can_help\":\"NO\",\"reason\":\"short explanation\",\"matched_service\":\"\"}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "b0ab19a8-9486-4e67-9a8f-e55f77ff68a6",
+      "name": "Message a model",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        -2896,
+        944
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "19HvBoC0QrFNPZUfvLpIoLth15l3gjluwtpF_r4YEuqo",
+          "mode": "list",
+          "cachedResultName": "NexusAICRMLog",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19HvBoC0QrFNPZUfvLpIoLth15l3gjluwtpF_r4YEuqo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19HvBoC0QrFNPZUfvLpIoLth15l3gjluwtpF_r4YEuqo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Can_help": "={{ $json.can_help }}",
+            "Reason": "={{ $json.reason }}",
+            "matched_services": "={{ $json.matched_service }}",
+            "name": "={{ $('Google Sheets Trigger').item.json.Name }}",
+            "email": "={{ $('Google Sheets Trigger').item.json.Email }}",
+            "phone": "={{ $('Google Sheets Trigger').item.json['Phone Number'] }}",
+            "budget": "={{ Object.entries($('Google Sheets Trigger').item.json).find(e => e[0].startsWith('Please select your budget'))?.[1] }}",
+            "services": "={{ $('Google Sheets Trigger').item.json['Select your required services'] }}",
+            "timeline": "={{ $('Google Sheets Trigger').item.json['Select Timeline'] }}",
+            "description": "={{ Object.entries($('Google Sheets Trigger').item.json).find(e => e[0].startsWith('Write a short project'))?.[1] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "budget",
+              "displayName": "budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "services",
+              "displayName": "services",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timeline",
+              "displayName": "timeline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "matched_services",
+              "displayName": "matched_services",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Can_help",
+              "displayName": "Can_help",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "bdfa9d9b-a738-4aea-a076-245cefa8def6",
+      "name": "Append row in sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2320,
+        944
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "nvv3oFcdh1Vf0VdD",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "725e626c-1a0c-4626-b1c2-c88707a5f6c7",
+              "leftValue": "={{ $json.can_help }}",
+              "rightValue": "YES",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "ecacd312-2e2b-4dfc-b90d-b7d8f6c4d8ac",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2096,
+        944
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "unmesha.dodake@gmail.com",
+        "subject": "=Lead Declined: {{ $json.name }}",
+        "message": "=<h3>Lead could not be qualified</h3> <p><b>Name:</b> {{ $json.name }}<br> <b>Email:</b> {{ $json.email }}<br> <b>Phone:</b> {{ $json.phone }}<br> <b>Services requested:</b>{{ $json.services }}<br> <b>Budget:</b> {{ $json.budget }}<br> <b>Timeline:</b> {{ $json.timeline }}</p> <p><b>AI reason for declining:</b> {{ $('Append row in sheet').item.json.Reason }}</p> <p><b>Description submitted:</b><br>{{ $json.description }}</p>",
+        "options": {}
+      },
+      "id": "5d8e971b-f650-43ad-8db6-06a20fca4eef",
+      "name": "Send a message",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -1872,
+        1040
+      ],
+      "webhookId": "fab33759-938d-4123-ba04-fc529da4e163",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hVucZlQBlN2QSJe4",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $json.name.split(' ').map(w => w[0]).join('').toUpperCase() }}-{{ $now.format('ddMMyy') }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "=1f_4WOCKJ8RahvMVH6m-dMEDHQKmzUu68",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "498274e1-7172-4816-929d-4073e74a2dab",
+      "name": "Create folder",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1872,
+        848
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "uvDQ7UQIPE1aAY0k",
+          "name": "Google Drive account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1d9nTFQotRggOo6tnNGPQa9z36QRJwmnYMrhk8a_RTzA",
+          "mode": "list",
+          "cachedResultName": "Untitled form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1d9nTFQotRggOo6tnNGPQa9z36QRJwmnYMrhk8a_RTzA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1079179006,
+          "mode": "list",
+          "cachedResultName": "Form responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1d9nTFQotRggOo6tnNGPQa9z36QRJwmnYMrhk8a_RTzA/edit#gid=1079179006"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "id": "aff329b7-effa-4457-9196-849cd132f110",
+      "name": "Google Sheets Trigger",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -3120,
+        944
+      ],
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "UwNpZa1aBM39OIWI",
+          "name": "Google Sheets Trigger account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1",
+          "cachedResultUrl": ""
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a senior proposals & SOW writer for NexusAI, an AI consulting and custom AI solutions provider.\n\nNON-NEGOTIABLE RULES\n- Output ONLY the final Proposal/SOW document text (no explanations, no JSON, no markdown code blocks).\n- DO NOT ask questions. If any detail is missing, use clear placeholders like [Client Address] or [Start Date].\n- Never promise guaranteed outcomes, revenue, or ROI. Never use words like \"eliminate\", \"will achieve\", \"cheapest\", \"lowest\".\n- All AI deliverables are assistive and probabilistic; state this in scope notes where relevant.\n- Keep formatting clean, readable, and consistent with proper spacing.\n\nCLIENT DETAILS\nClient Name: {{ $('Google Sheets Trigger').item.json['Name '] }}\nClient Email:{{ $('Google Sheets Trigger').item.json['Email id '] }} \nRequested Service (from form){{ $('Google Sheets Trigger').item.json['Select your required services'] }}: \nMatched Service (from classifier): {{ $('Edit Fields').item.json.matched_service }}\nProject Description: {{ $('Google Sheets Trigger').item.json['Write a short project description. Make sure to mention the exact services you ticked above (as keywords) and clearly state your objective.'] }}\nClient-Stated Budget (INR): {{ $('Google Sheets Trigger').item.json['Please select your budget range'] }}\nTimeline: {{ $('Google Sheets Trigger').item.json['Select Timeline'] }}\n\nNEXUSAI DELIVERY POLICY (must reflect in the proposal)\nDelivery phases: Discovery, Design, Build, Test, Deploy, Handover. Include only the phases that apply to the matched service — mark others as N/A.\nMilestone and acceptance: milestones defined per project. Client review required within agreed timeframe. No feedback within timeframe = deemed acceptance.\nClient responsibilities: timely access to data, systems, and stakeholders. Delays caused by client extend the timeline automatically. Client is responsible for internal adoption.\nChange requests: scope changes require written approval. Cost and timeline impact documented. No obligation to implement without agreement.\nHandover: handover documents provided if included in scope. Training and ongoing support only if explicitly agreed. Ongoing maintenance requires a separate contract.\n\nNEXUSAI PRICING POLICY (must reflect in Commercials section)\nPricing is value-based, not commodity-based. No fixed single price — always show a RANGE.\nEvery quote depends on four factors: time duration, project complexity (low/medium/high), data and integration load, risk and responsibility. Briefly explain which of these apply to this project.\nDO NOT invent any rupee amounts. Leave all monetary values as [Insert quote]. Final amounts are set at proposal sign-off after internal approval.\nMilestone split (default): 30% Kickoff, 40% Mid, 30% Final — express as [30% of Total], [40% of Total], [30% of Total].\nThird-party API costs, paid AI model usage, cloud infrastructure, and licensing fees are billed separately unless explicitly stated.\nCurrency: INR throughout. All fees exclusive of applicable taxes.\n\nNEXUSAI LEGAL POSITIONING (must reflect in scope/liability/IP sections)\nNature of services: professional AI consulting, design, and implementation. Deliverables are assistive, probabilistic, and data-dependent. No guarantee of commercial, financial, regulatory, or operational outcomes.\nLiability: NexusAI's total liability is limited to fees paid under the specific project. No liability for indirect, incidental, consequential, or punitive damages. No responsibility for third-party system failures, APIs, or platforms.\nIP baseline: Client owns final project deliverables upon full payment. NexusAI retains ownership of pre-existing tools, frameworks, templates, and reusable logic. Reuse of non-identifiable generalized learnings is permitted.\n\nOUTPUT REQUIREMENTS\n- 900–1300 words.\n- Professional tone, not salesy.\n- Sections in order: Title/Cover, Executive Summary, Scope & Deliverables, Out of Scope, Assumptions, Delivery Phases & Timeline, Acceptance Criteria, Commercials (with milestone split, [Insert quote] placeholders, and pricing-factors explanation), Change Control, IP & Ownership, Confidentiality note, Liability, Next Steps, Signature blocks.\n- Use simple separators such as ══════════ or ──────────.\n- Currency: INR throughout.\n\nNOW WRITE THE COMPLETE PROFESSIONAL SERVICES PROPOSAL / STATEMENT OF WORK AS FINAL OUTPUT."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "9cafe0b7-f9b7-4f47-9e9e-86773768bebc",
+      "name": "Create A proposal",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        -976,
+        544
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "etdbV5lLCSzFnqr0",
+          "name": "OpenAI account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a contracts specialist. Draft a MUTUAL NON-DISCLOSURE AGREEMENT (NDA) between NexusAI and the Client.\n\nSTRICT RULES\n- Output ONLY the NDA text (no explanations, no JSON, no markdown code blocks).\n- DO NOT ask questions. If something is missing, use [Placeholder].\n- Write in clear legal style that is business-friendly and readable.\n\nPARTIES\nParty 1 (Service Provider): NexusAI (or [Your Company Legal Name])\nParty 2 (Client): {{ $('Google Sheets Trigger').item.json['Name '] }} (Email: {{ $('Google Sheets Trigger').item.json['Email id '] }})\nPurpose: Evaluation and discussion of {{ $('Edit Fields').item.json.matched_service }} and related engagement.\nEffective Date: [Effective Date]\nTerm: 2 years (confidentiality survives 3 years after termination unless trade secrets apply).\n\nNEXUSAI IP + CONFIDENTIALITY POLICY (must reflect in the relevant clauses)\nIP ownership: Client owns final deliverables only after full payment. NexusAI retains ownership of pre-existing tools, frameworks, templates, and reusable logic. NexusAI may reuse non-identifiable learnings that do not expose client-specific data.\nConfidential information includes: business data, technical details, pricing and commercial terms, project methodology, personal data, and any information marked or reasonably understood as confidential.\nExclusions: information already public, independently developed, lawfully received from a third party without confidentiality obligation, or required by law to disclose (with prompt notice to the disclosing party where legally permitted).\nData handling: NexusAI does not sell, reuse for other clients, or distribute client data. Data retention and deletion are governed by the project agreement and any accompanying DPA.\nNo license: nothing in this agreement grants either party a license to the other's IP.\nNo warranty: information is shared \"as is\"; no warranty of accuracy is implied.\n\nMUST INCLUDE CLAUSES\n1. Definitions (Confidential Information, Representatives)\n2. Purpose & Use Limitation\n3. Exclusions from Confidential Information\n4. Obligations of Receiving Party (care, non-disclosure, restricted use)\n5. Permitted Disclosures (representatives; legal requirement with notice)\n6. Return/Destruction of Information\n7. IP Ownership (reflect NexusAI baseline above)\n8. No License / No Warranty\n9. Injunctive Relief\n10. Term & Termination\n11. Limitation of Liability (direct damages only; no consequential damages)\n12. Governing Law & Jurisdiction: [Insert State/Country]\n13. Entire Agreement; Amendments; Severability\n14. Signatures (both parties)\n\nFORMATTING\n- Clear numbered headings.\n- 900–1200 words.\n- Signature blocks with name/title/date placeholders.\n\nGENERATE THE COMPLETE MUTUAL NDA NOW."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "a15a26a0-efba-4b4f-9ccc-82cdc071267f",
+      "name": "Create NDA",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        -976,
+        736
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a privacy/compliance contracts specialist. Draft a DATA PROCESSING AGREEMENT (DPA) between NexusAI (Processor) and the Client (Controller), aligned with GDPR-style structure.\n\nSTRICT RULES\n- Output ONLY the DPA text (no explanations, no JSON, no markdown code blocks).\n- DO NOT ask questions. Use [Placeholder] where needed.\n- Keep it professional and structured.\n\nCONTEXT\nClient (Controller): {{ $('Google Sheets Trigger').item.json['Name '] }} ({{ $('Google Sheets Trigger').item.json['Email id '] }})\nService Provider (Processor): NexusAI (or [Your Company Legal Name])\nService: {{ $('Edit Fields').item.json.matched_service }}\nEffective Date: [Effective Date]\n\nNEXUSAI DATA + IP POLICY (must reflect in the relevant sections)\nData ownership: Client retains ownership of all input data unless otherwise agreed.\nData access purpose: NexusAI may access client data solely for project execution, testing, and support.\nData non-use: NexusAI does not sell, reuse for other clients, or distribute client data.\nData retention and deletion: governed by this DPA and the project agreement; deletion or return performed at the end of services per client instruction.\nSub-processors: engagement of any sub-processor requires prior notice; client may object; NexusAI remains liable for sub-processor acts.\nInternational transfers: only where the destination provides adequate protection or Standard Contractual Clauses (SCCs) are in place.\nBreach notification: Processor to notify Controller without undue delay upon becoming aware of a personal data breach, and to assist with regulatory notifications.\nSecurity: appropriate technical and organisational measures — access control, encryption in transit and at rest where applicable, logging, incident response, vendor risk management.\nIP baseline: Client owns final deliverables after full payment. NexusAI retains pre-existing tools, frameworks, and reusable logic.\n\nREQUIRED SECTIONS\n1. Definitions\n2. Roles of the Parties (Controller/Processor)\n3. Scope of Processing\n   - Subject matter: {{ $('Edit Fields').item.json.matched_service }}\n   - Duration: {{ $('Google Sheets Trigger').item.json['Select Timeline'] }} (or [Duration])\n   - Nature & purpose: delivery of services and support\n   - Categories of data subjects: [Customers/Employees/End users]\n   - Types of personal data: [Name, email, phone, usage data, etc.]\n4. Processor Obligations (reflect Data policy above)\n5. Confidentiality\n6. Security Measures (technical & organisational — list practical controls)\n7. Sub-processors (approval model + list placeholder)\n8. International Transfers (SCCs placeholder)\n9. Assistance to Controller (DSARs, DPIAs, breach support)\n10. Personal Data Breach Notification (timeframe + process)\n11. Deletion/Return of Data at end of services\n12. Audits & Records\n13. Liability & Indemnity (limited to fees paid under the project; no consequential damages)\n14. Governing Law & Jurisdiction: [Placeholder]\n15. Annex A: Details of Processing\n16. Annex B: Security Measures\n\nLENGTH + FORMAT\n- 1100–1600 words.\n- Numbered headings.\n- Clean spacing and readable formatting.\n\nGENERATE THE COMPLETE DPA NOW."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "f63d270e-f4e5-4f54-831b-0b5614a13ab3",
+      "name": "Create DPA",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        -976,
+        928
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "={{ $('Create folder').item.json.id }}",
+        "title": "=Proposal - {{ $('Google Sheets Trigger').item.json['Name '] }}"
+      },
+      "id": "3ead0758-de22-4495-a84c-fe0e28c14bc2",
+      "name": "Proposal creation",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        544
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "ZKTeTHD0G749KQGf",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "={{ $('Create folder').item.json.id }}",
+        "title": "=NDA - {{ $('Google Sheets Trigger').item.json['Name '] }}"
+      },
+      "id": "e1d0db3b-8709-4a98-a42b-d8593a0d2342",
+      "name": "NDA creation",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        736
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "ZKTeTHD0G749KQGf",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "={{ $('Create folder').item.json.id }}",
+        "title": "=DPA - {{ $('Google Sheets Trigger').item.json['Name '] }}"
+      },
+      "id": "e1743bfa-b3aa-40b5-90b1-eb1d25439762",
+      "name": "DPA creation",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        928
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "ZKTeTHD0G749KQGf",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "id": "cd73020f-5a9d-4362-9286-ab40bea3630f",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1024,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "unmesha.dodake@gmail.com",
+        "subject": "Documents are Ready!",
+        "message": "=<h3>All client documents have been generated</h3> <p><b>Client:</b> <br>{{ $('Google Sheets Trigger').item.json['Name '] }} <b>Email:</b> <br>{{ $('Google Sheets Trigger').item.json['Email id '] }} <b>Phone:</b>{{ $('Google Sheets Trigger').item.json['Contact no.'] }} <br> <b>Service:</b> <br>{{ $('Edit Fields').item.json.matched_service }} <b>Budget:</b> {{ $('Google Sheets Trigger').item.json['Please select your budget range'] }}<br> <b>Timeline:</b>{{ $('Google Sheets Trigger').item.json['Select Timeline'] }} </p>  <p><b>AI Assessment:</b>{{ $('Edit Fields').item.json.reason }} </p>  <p><b>Client folder:</b> <a href=\"https://drive.google.com/drive/folders/{{ $('Create folder').item.json.id }}\">Open in Google Drive</a></p>  <p>Documents created: Proposal, NDA, DPA, Invoice</p>",
+        "options": {}
+      },
+      "id": "87429697-8152-4e95-a110-74822585b904",
+      "name": "Send a message1",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1248,
+        800
+      ],
+      "webhookId": "54db5fa0-0817-4494-9c1a-490c528c4478",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cxI319j0MDtbFtIe",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a finance operations assistant. Generate a professional, print-ready INVOICE for NexusAI.\n\nSTRICT RULES\n- Output ONLY the invoice text (no explanations, no JSON, no markdown code blocks).\n- DO NOT ask questions. Use [Placeholder] if something is missing.\n- Keep formatting clean with normal spacing. Use simple tables (pipes) if needed.\n\nCLIENT + PROJECT\nBill To (Client): {{ $('Google Sheets Trigger').item.json['Name '] }}\nClient Email: {{ $('Google Sheets Trigger').item.json['Email id '] }}\nService: {{ $('Edit Fields').item.json.matched_service }}\nProject Timeline: {{ $('Google Sheets Trigger').item.json['Select Timeline'] }}\nProject Reference/Notes: {{ $('Google Sheets Trigger').item.json['Write a short project description. Make sure to mention the exact services you ticked above (as keywords) and clearly state your objective.'] }}\nClient-Stated Budget (INR): {{ $('Google Sheets Trigger').item.json['Please select your budget range'] }}\n\nNEXUSAI COMMERCIAL POLICY (must reflect in every relevant field — do NOT invent numeric values)\nPricing rule: leave all monetary amounts as [Insert quote] or [Amount]. NEVER guess a rupee value. Note in the invoice that final amounts are set at proposal sign-off.\nPayment structure (default): advance payment required before project start. Milestones linked to deliverables. Final payment before handover unless agreed otherwise.\nPayment terms: payment due within 15 days of invoice date (Net 15). Late payments may pause project work.\nLate fee: 1.5% per month on overdue amounts.\nRefund policy: payments for completed milestones are non-refundable. Advance refunds only if explicitly agreed in writing. No refunds for work already delivered.\nTax: all fees exclusive of applicable taxes. Client responsible for statutory taxes unless specified. No deductions or withholdings without written agreement.\nExpenses: out-of-pocket expenses reimbursed only if pre-approved. Third-party licenses/tools billed separately if required.\nCurrency: INR.\n\nINVOICE SETTINGS\nInvoice No: INV-[YYYY]-[####]\nInvoice Date: [Invoice Date]\nDue Date: [Due Date] (Net 15 days)\nCurrency: INR\n\nLINE ITEMS (adjust to service)\n1) Professional Services for {{ $('Edit Fields').item.json.matched_service }} (as per SOW)\n   Qty: 1\n   Rate: [Insert quote]\n   Amount: [Insert quote]\n\nPAYMENT SCHEDULE (Milestones)\n- Milestone 1 (30%): [30% of Total] — Due on signing\n- Milestone 2 (40%): [40% of Total] — Due mid-project\n- Milestone 3 (30%): [30% of Total] — Due on final delivery\n\nTAX\n- GST/VAT: [If Applicable] (otherwise: \"Taxes: To be charged as per applicable law\")\n\nPAYMENT INSTRUCTIONS\n- Bank Transfer: [Bank Name], A/C Name [ ], A/C No [ ], IFSC [ ], SWIFT [ ]\n- UPI: [UPI ID]\n- Payment Reference: Invoice No.\n\nTERMS\n- Payment due within 15 days of invoice date (Net 15).\n- Late fee: 1.5% per month on overdue amounts.\n- Disputes: notify within 7 days of invoice date at [billing email].\n- Services may pause if payment is overdue by 15+ days.\n- Payments for completed milestones are non-refundable.\n- All fees exclusive of applicable taxes; client is responsible for statutory taxes.\n\nSIGN-OFF\nService Provider: NexusAI (or [Legal Name])\nEmail: [Billing Email] | Phone: [Phone]\nAuthorized Signatory: ___________________  Date: ___________\n\nNOW OUTPUT THE FINAL INVOICE TEXT ONLY."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "fc730e1b-0dfe-465f-b8bf-9f5515ba8ee9",
+      "name": "Create Invoice",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        -976,
+        1120
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "cEsmd1A77tMyaIWJ",
+          "name": "OpenAI account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "={{ $('Create folder').item.json.id }}",
+        "title": "=Invoice - {{ $('Google Sheets Trigger').item.json['Name '] }}"
+      },
+      "id": "268ff51e-bae3-46a5-b5ae-9954b00fb2dd",
+      "name": "Invoice creation",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        1120
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "ZKTeTHD0G749KQGf",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f7d4dd58-fcad-4630-81ff-354574ee05f4",
+              "name": "can_help",
+              "value": "={{ JSON.parse($json.output[0].content[0].text.replace(/```json|```/g, '').trim()).can_help }}",
+              "type": "string"
+            },
+            {
+              "id": "f62f0d32-d902-4f8e-8e89-609dc73b43af",
+              "name": "reason",
+              "value": "={{ JSON.parse($json.output[0].content[0].text.replace(/```json|```/g, '').trim()).reason }}",
+              "type": "string"
+            },
+            {
+              "id": "b89709a3-923f-4646-8298-d4d0c96a64c3",
+              "name": "matched_service",
+              "value": "={{ JSON.parse($json.output[0].content[0].text.replace(/```json|```/g, '').trim()).matched_service }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "316f16f7-93a9-46a0-9661-d9b0b7a4bf43",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2544,
+        944
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('Create A proposal').item.json.output[0].content[0].text }}"
+            }
+          ]
+        }
+      },
+      "id": "c10b71d1-fde6-44a5-a68b-c60e58a662d7",
+      "name": "Update a document",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        544
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "ZKTeTHD0G749KQGf",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('Create NDA').item.json.output[0].content[0].text }}"
+            }
+          ]
+        }
+      },
+      "id": "0813d8b3-66cb-4f30-969f-73f05179e3be",
+      "name": "Update a document1",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        736
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "ZKTeTHD0G749KQGf",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('Create DPA').item.json.output[0].content[0].text }}"
+            }
+          ]
+        }
+      },
+      "id": "8bcaf30a-e7de-4b75-8d2c-441c08ee9f3b",
+      "name": "Update a document2",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        928
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "ZKTeTHD0G749KQGf",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('Create Invoice').item.json.output[0].content[0].text }}"
+            }
+          ]
+        }
+      },
+      "id": "0b799ae6-23c4-4eae-b962-5f2e9a802ef9",
+      "name": "Update a document3",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        1120
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "ZKTeTHD0G749KQGf",
+          "name": "Google Docs account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Create folder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder": {
+      "main": [
+        [
+          {
+            "node": "Create A proposal",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create NDA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create DPA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create Invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create A proposal": {
+      "main": [
+        [
+          {
+            "node": "Proposal creation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create NDA": {
+      "main": [
+        [
+          {
+            "node": "NDA creation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create DPA": {
+      "main": [
+        [
+          {
+            "node": "DPA creation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Proposal creation": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NDA creation": {
+      "main": [
+        [
+          {
+            "node": "Update a document1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DPA creation": {
+      "main": [
+        [
+          {
+            "node": "Update a document2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Invoice": {
+      "main": [
+        [
+          {
+            "node": "Invoice creation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Invoice creation": {
+      "main": [
+        [
+          {
+            "node": "Update a document3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Update a document2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Update a document3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
